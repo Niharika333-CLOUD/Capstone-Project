@@ -1,0 +1,174 @@
+<app-layout [showSidebar]="true">
+  <div class="product-list-page">
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <div class="search-section">
+        <input 
+          type="text" 
+          placeholder="Search for books, authors..." 
+          [(ngModel)]="filters.search"
+          (keyup.enter)="onSearchChange()"
+          class="search-input"
+        >
+        <button class="btn btn-primary" (click)="onSearchChange()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          Search
+        </button>
+      </div>
+
+      <div class="filter-controls">
+        <select [(ngModel)]="selectedLanguage" (change)="onLanguageChange()" class="filter-select">
+          <option value="">Language</option>
+          <option *ngFor="let lang of languages" [value]="lang">{{ lang }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedFormat" (change)="onFormatChange()" class="filter-select">
+          <option value="">Format</option>
+          <option *ngFor="let format of formats" [value]="format">{{ format }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedPriceRange" (change)="onPriceRangeChange(selectedPriceRange)" class="filter-select">
+          <option [ngValue]="null">Price Range</option>
+          <option *ngFor="let range of priceRanges" [ngValue]="range">{{ range.label }}</option>
+        </select>
+
+        <select [(ngModel)]="filters.sort" (change)="onSortChange()" class="filter-select">
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+
+        <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Header -->
+    <div class="results-header" *ngIf="!loading">
+      <h2>{{ totalProducts }} Books Found</h2>
+      <p class="results-info" *ngIf="filters.search">
+        Showing results for "<strong>{{ filters.search }}</strong>"
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading products...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-container">
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="loadProducts()">Retry</button>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="!loading && !error && products.length > 0" class="products-section">
+      <div class="products-grid">
+        <div class="product-card" 
+             *ngFor="let product of products" 
+             (click)="viewProduct(product._id)">
+          <div class="product-image-container">
+            <img [src]="product.images?.[0]?.url || 'assets/placeholder-book.jpg'" 
+                 [alt]="product.title"
+                 class="product-image">
+            <div class="product-overlay">
+              <button class="btn btn-primary btn-sm" (click)="addToCart(product, $event)">
+                Add to Cart
+              </button>
+            </div>
+            <span class="stock-badge" *ngIf="product.stock < 5 && product.stock > 0">
+              Only {{ product.stock }} left
+            </span>
+            <span class="out-of-stock-badge" *ngIf="product.stock === 0">
+              Out of Stock
+            </span>
+          </div>
+          <div class="product-info">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-author">by {{ product.author }}</p>
+            
+            <!-- Rating -->
+            <div class="product-rating" *ngIf="product.ratings && product.ratings.average > 0">
+              <div class="stars">
+                <span *ngFor="let filled of getStarArray(product.ratings.average)"
+                      class="star"
+                      [class.filled]="filled">★</span>
+              </div>
+              <span class="rating-count">({{ product.ratings.count }})</span>
+            </div>
+
+            <!-- Description -->
+            <p class="product-description">{{ product.description | slice:0:100 }}...</p>
+
+            <!-- Tags -->
+            <div class="product-tags" *ngIf="product.tags && product.tags.length > 0">
+              <span class="tag" *ngFor="let tag of product.tags.slice(0, 2)">{{ tag }}</span>
+            </div>
+
+            <!-- Price and Delivery -->
+            <div class="product-footer">
+              <div class="price-section">
+                <span class="price">₹{{ product.price }}</span>
+                <span class="original-price" *ngIf="product.discountPrice">₹{{ product.discountPrice }}</span>
+                <span class="discount" *ngIf="product.discountPrice">
+                  {{ ((product.discountPrice - product.price) / product.discountPrice * 100).toFixed(0) }}% OFF
+                </span>
+              </div>
+              <span class="delivery-info">Delivery by {{ getDeliveryDate(product) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Previous
+        </button>
+
+        <div class="pagination-numbers">
+          <button 
+            *ngFor="let page of getPaginationArray()"
+            class="pagination-number"
+            [class.active]="page === currentPage"
+            [class.ellipsis]="page === -1"
+            [disabled]="page === -1"
+            (click)="goToPage(page)">
+            {{ page === -1 ? '...' : page }}
+          </button>
+        </div>
+
+        <button 
+          class="pagination-btn" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)">
+          Next
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && products.length === 0" class="empty-state">
+      <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <h3>No Products Found</h3>
+      <p>Try adjusting your filters or search terms</p>
+      <button class="btn btn-primary" (click)="clearFilters()">Clear All Filters</button>
+    </div>
+  </div>
+</app-layout>

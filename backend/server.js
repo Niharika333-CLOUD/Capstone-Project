@@ -43,6 +43,8 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/cart', require('./routes/cartRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/writers', require('./routes/writerRoutes'));
+app.use('/api/wishlist', require('./routes/wishlistRoutes'));
 
 // Welcome route
 app.get('/', (req, res) => {

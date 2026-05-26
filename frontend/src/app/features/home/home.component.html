@@ -1,0 +1,196 @@
+<app-layout [showSidebar]="true">
+  <div class="home-page">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading books...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-container">
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="loadProducts()">Retry</button>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && !error">
+      <!-- Hero Banner -->
+      <section class="hero-banner">
+        <div class="hero-content">
+          <h1>Discover Your Next Great Read</h1>
+          <p>Explore thousands of books across all genres</p>
+          <button class="btn btn-primary btn-lg" routerLink="/products">Browse Collection</button>
+        </div>
+      </section>
+
+      <!-- Recommended for You Section -->
+      <section class="book-section" *ngIf="recommendedProducts.length > 0">
+        <div class="section-header">
+          <h2>Recommended for You</h2>
+          <a routerLink="/products" class="view-all">View All →</a>
+        </div>
+        <div class="book-grid">
+          <div class="book-card" 
+               *ngFor="let product of recommendedProducts" 
+               (click)="viewProduct(product._id)">
+            <div class="book-image-container">
+              <img [src]="product.images?.[0]?.url || 'assets/placeholder-book.jpg'" 
+                   [alt]="product.title"
+                   class="book-image">
+              <div class="book-overlay">
+                <button class="btn btn-primary btn-sm" (click)="addToCart(product, $event)">
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+            <div class="book-info">
+              <h3 class="book-title">{{ product.title }}</h3>
+              <p class="book-author">by {{ product.author }}</p>
+              
+              <!-- Rating -->
+              <div class="book-rating" *ngIf="product.ratings && product.ratings.average > 0">
+                <div class="stars">
+                  <span *ngFor="let filled of getStarArray(product.ratings.average)"
+                        class="star"
+                        [class.filled]="filled">★</span>
+                </div>
+                <span class="rating-count">({{ product.ratings.count }})</span>
+              </div>
+
+              <!-- Tags -->
+              <div class="book-tags" *ngIf="product.tags && product.tags.length > 0">
+                <span class="tag" *ngFor="let tag of product.tags.slice(0, 2)">{{ tag }}</span>
+              </div>
+
+              <!-- Price and Delivery -->
+              <div class="book-footer">
+                <div class="price-section">
+                  <span class="price">₹{{ product.price }}</span>
+                  <span class="original-price" *ngIf="product.discountPrice">₹{{ product.discountPrice }}</span>
+                </div>
+                <span class="delivery-info">Delivery by {{ getDeliveryDate(product) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bestsellers this Month Section -->
+      <section class="book-section" *ngIf="bestsellers.length > 0">
+        <div class="section-header">
+          <h2>Bestsellers this Month</h2>
+          <a routerLink="/products" [queryParams]="{sort: 'popular'}" class="view-all">View All →</a>
+        </div>
+        <div class="book-grid">
+          <div class="book-card" 
+               *ngFor="let product of bestsellers" 
+               (click)="viewProduct(product._id)">
+            <div class="book-image-container">
+              <img [src]="product.images?.[0]?.url || 'assets/placeholder-book.jpg'" 
+                   [alt]="product.title"
+                   class="book-image">
+              <div class="book-overlay">
+                <button class="btn btn-primary btn-sm" (click)="addToCart(product, $event)">
+                  Add to Cart
+                </button>
+              </div>
+              <span class="bestseller-badge">Bestseller</span>
+            </div>
+            <div class="book-info">
+              <h3 class="book-title">{{ product.title }}</h3>
+              <p class="book-author">by {{ product.author }}</p>
+              
+              <!-- Rating -->
+              <div class="book-rating" *ngIf="product.ratings && product.ratings.average > 0">
+                <div class="stars">
+                  <span *ngFor="let filled of getStarArray(product.ratings.average)"
+                        class="star"
+                        [class.filled]="filled">★</span>
+                </div>
+                <span class="rating-count">({{ product.ratings.count }})</span>
+              </div>
+
+              <!-- Tags -->
+              <div class="book-tags" *ngIf="product.tags && product.tags.length > 0">
+                <span class="tag" *ngFor="let tag of product.tags.slice(0, 2)">{{ tag }}</span>
+              </div>
+
+              <!-- Price and Delivery -->
+              <div class="book-footer">
+                <div class="price-section">
+                  <span class="price">₹{{ product.price }}</span>
+                  <span class="original-price" *ngIf="product.discountPrice">₹{{ product.discountPrice }}</span>
+                </div>
+                <span class="delivery-info">Delivery by {{ getDeliveryDate(product) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- New Launches Section -->
+      <section class="book-section" *ngIf="newLaunches.length > 0">
+        <div class="section-header">
+          <h2>New Launches</h2>
+          <a routerLink="/products" [queryParams]="{sort: 'newest'}" class="view-all">View All →</a>
+        </div>
+        <div class="book-grid">
+          <div class="book-card" 
+               *ngFor="let product of newLaunches" 
+               (click)="viewProduct(product._id)">
+            <div class="book-image-container">
+              <img [src]="product.images?.[0]?.url || 'assets/placeholder-book.jpg'" 
+                   [alt]="product.title"
+                   class="book-image">
+              <div class="book-overlay">
+                <button class="btn btn-primary btn-sm" (click)="addToCart(product, $event)">
+                  Add to Cart
+                </button>
+              </div>
+              <span class="new-badge">New</span>
+            </div>
+            <div class="book-info">
+              <h3 class="book-title">{{ product.title }}</h3>
+              <p class="book-author">by {{ product.author }}</p>
+              
+              <!-- Rating -->
+              <div class="book-rating" *ngIf="product.ratings && product.ratings.average > 0">
+                <div class="stars">
+                  <span *ngFor="let filled of getStarArray(product.ratings.average)"
+                        class="star"
+                        [class.filled]="filled">★</span>
+                </div>
+                <span class="rating-count">({{ product.ratings.count }})</span>
+              </div>
+
+              <!-- Tags -->
+              <div class="book-tags" *ngIf="product.tags && product.tags.length > 0">
+                <span class="tag" *ngFor="let tag of product.tags.slice(0, 2)">{{ tag }}</span>
+              </div>
+
+              <!-- Price and Delivery -->
+              <div class="book-footer">
+                <div class="price-section">
+                  <span class="price">₹{{ product.price }}</span>
+                  <span class="original-price" *ngIf="product.discountPrice">₹{{ product.discountPrice }}</span>
+                </div>
+                <span class="delivery-info">Delivery by {{ getDeliveryDate(product) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Empty State -->
+      <div *ngIf="recommendedProducts.length === 0 && bestsellers.length === 0 && newLaunches.length === 0" 
+           class="empty-state">
+        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <h3>No Books Available</h3>
+        <p>Check back later for new arrivals</p>
+      </div>
+    </div>
+  </div>
+</app-layout>

@@ -1,0 +1,51 @@
+<aside class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <h3>Categories</h3>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="category-list">
+    <button 
+      class="category-item" 
+      [class.active]="!selectedCategory"
+      (click)="selectCategory(null)"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>All Books</span>
+    </button>
+
+    <button 
+      *ngFor="let category of categories"
+      class="category-item" 
+      [class.active]="selectedCategory === category._id"
+      (click)="selectCategory(category._id)"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+      <span>{{ category.name }}</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="promo-card">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      <h4>Special Offer!</h4>
+      <p>Get 20% off on your first order</p>
+      <button class="btn btn-primary btn-sm">Shop Now</button>
+    </div>
+  </div>
+</aside>

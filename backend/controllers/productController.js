@@ -31,10 +31,13 @@ exports.getProducts = async (req, res, next) => {
     }
 
     // Price range filter
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+    if (minPrice && minPrice !== 'undefined' && !isNaN(Number(minPrice))) {
+      query.price = query.price || {};
+      query.price.$gte = Number(minPrice);
+    }
+    if (maxPrice && maxPrice !== 'undefined' && !isNaN(Number(maxPrice))) {
+      query.price = query.price || {};
+      query.price.$lte = Number(maxPrice);
     }
 
     // Search filter
@@ -310,6 +313,25 @@ exports.addReview = async (req, res, next) => {
       success: true,
       message: 'Review added successfully',
       data: product
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get all categories
+// @route   GET /api/products/categories
+// @access  Public
+exports.getCategories = async (req, res, next) => {
+  try {
+    const categories = await Category.find({ isActive: true })
+      .select('name slug description icon')
+      .sort({ name: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: categories.length,
+      data: categories
     });
   } catch (error) {
     next(error);

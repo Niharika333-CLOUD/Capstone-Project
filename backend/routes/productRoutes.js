@@ -8,13 +8,15 @@ const {
   getFeaturedProducts,
   getRecommendations,
   addReview,
-  getAllBrands
+  getAllBrands,
+  getCategories
 } = require('../controllers/productController');
 const { protect, optionalAuth } = require('../middleware/auth');
 
 // Public routes
 router.get('/', optionalAuth, getProducts);
 router.get('/featured', getFeaturedProducts);
+router.get('/categories', getCategories);
 router.get('/brands', getAllBrands);
 router.get('/category/:categoryId', getProductsByCategory);
 router.get('/brand/:brand', getProductsByBrand);

@@ -1,0 +1,93 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-content">
+      <!-- Brand Section -->
+      <div class="footer-section brand-section">
+        <div class="footer-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4H26C27.1 4 28 4.9 28 6V26C28 27.1 27.1 28 26 28H6C4.9 28 4 27.1 4 26V6C4 4.9 4.9 4 6 4Z" fill="#4a9eff"/>
+            <path d="M10 10H22V12H10V10ZM10 14H22V16H10V14ZM10 18H18V20H10V18Z" fill="white"/>
+          </svg>
+          <span>Book Worm</span>
+        </div>
+        <p class="footer-description">
+          Your one-stop destination for all your reading needs. Discover, explore, and purchase books from a vast collection.
+        </p>
+        <div class="social-links">
+          <a *ngFor="let social of socialLinks" 
+             [href]="social.url" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             [attr.aria-label]="social.name">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Company Links -->
+      <div class="footer-section">
+        <h4>Company</h4>
+        <ul>
+          <li *ngFor="let link of footerLinks.company">
+            <a [routerLink]="link.route">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Help Links -->
+      <div class="footer-section">
+        <h4>Help & Support</h4>
+        <ul>
+          <li *ngFor="let link of footerLinks.help">
+            <a [routerLink]="link.route">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal Links -->
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <ul>
+          <li *ngFor="let link of footerLinks.legal">
+            <a [routerLink]="link.route">{{ link.label }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="footer-section newsletter-section">
+        <h4>Stay Updated</h4>
+        <p>Subscribe to our newsletter for the latest books and offers.</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Enter your email">
+          <button class="btn btn-primary">Subscribe</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} Book Worm. All rights reserved.</p>
+      <div class="payment-methods">
+        <span>We Accept:</span>
+        <div class="payment-icons">
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+            <rect width="40" height="24" rx="4" fill="#1A1F71"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="10" font-weight="bold">VISA</text>
+          </svg>
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+            <rect width="40" height="24" rx="4" fill="#EB001B"/>
+            <circle cx="15" cy="12" r="8" fill="#FF5F00"/>
+            <circle cx="25" cy="12" r="8" fill="#F79E1B"/>
+          </svg>
+          <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+            <rect width="40" height="24" rx="4" fill="#00579F"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="8" font-weight="bold">AMEX</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -58,6 +58,21 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'writers',
+    loadComponent: () => import('./features/writers/writers.component').then(m => m.WritersComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'payment',
+    loadComponent: () => import('./features/payment/payment.component').then(m => m.PaymentComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'order-confirmation',
+    loadComponent: () => import('./shared/components/order-confirmation-modal/order-confirmation-modal.component').then(m => m.OrderConfirmationModalComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: '/home'
   }

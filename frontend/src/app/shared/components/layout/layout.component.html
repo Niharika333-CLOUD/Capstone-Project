@@ -1,0 +1,14 @@
+<div class="app-layout">
+  <app-header></app-header>
+  
+  <div class="main-wrapper">
+    <app-sidebar *ngIf="showSidebar"></app-sidebar>
+    
+    <main class="main-content" [class.with-sidebar]="showSidebar" [class.full-width]="fullWidth">
+      <div class="content-container" [class.full-width]="fullWidth">
+        <ng-content></ng-content>
+      </div>
+      <app-footer></app-footer>
+    </main>
+  </div>
+</div>
